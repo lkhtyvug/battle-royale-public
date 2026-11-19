@@ -1,0 +1,26 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.gsywgeu.battleroyale'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.gsywgeu.battleroyale'
+        minSdk 23
+        targetSdk 34
+        versionCode 1
+        versionName '0.1.0-test'
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.12.1'
+}
