@@ -1,9 +1,11 @@
 # Battle Royale — código-fonte
 
-Este repositório é público. Qualquer pessoa pode ler e copiar o HTML, o código Android e os dados do jogo; não publique aqui senhas, tokens ou outros dados privados.
+Este repositório é público. Qualquer pessoa pode ler e copiar o HTML, o código Android e os dados do jogo; não publique senhas, tokens ou outros dados privados aqui.
 
-O APK de teste não contém `index.html`. Ele baixa o arquivo por HTTPS, confere o SHA-256 aprovado e só então o executa. O app não pede token nem envia credenciais ao GitHub. A cópia baixada fica no armazenamento privado do app. A primeira abertura precisa de Internet; o jogo também carrega bibliotecas externas, então o cache do HTML, por si só, não garante funcionamento offline. O hash valida o `index.html`, não os scripts servidos por CDNs externos.
+A tela de login Google foi removida. O jogo permite criar uma conta local com nome e senha e exige os dois campos; a senha deve ter pelo menos 6 caracteres. As senhas novas são armazenadas como hash PBKDF2-SHA-256 com salt aleatório, nunca em texto aberto. Contas antigas locais com senha ainda podem entrar e são atualizadas para o novo formato após um login válido. Contas Google antigas salvas somente neste aparelho podem definir uma senha local no fluxo de criação se mantiverem o nome já registrado.
 
-O hash aprovado para `index.html` nesta versão é `cd71fbe4506fd7585d97ab9bef41ebbbf2032393eb9deaecd117c2d5e52a56eb`. Se o HTML mudar, o APK atual vai recusar a nova cópia; é preciso revisar o arquivo e compilar outro APK com o hash novo. Isso impede que uma alteração inesperada na branch pública seja executada por esta versão do app.
+As contas e o progresso ficam no armazenamento local deste aparelho. Não existe servidor de contas nem sincronização entre aparelhos; desinstalar ou limpar os dados do app pode apagar esse progresso. O cadastro local é para teste e não equivale à autenticação de uma conta em servidor.
 
-O APK é de teste e não está incluído neste repositório nem publicado na Play Store. Ele abre em orientação horizontal. O jogo usa bibliotecas externas, como Three.js e PeerJS; o login Google existente pode precisar de integração nativa ou autenticação pelo navegador, pois o Google pode bloquear OAuth em WebViews.
+O APK de teste não contém `index.html`. Ele baixa o arquivo por HTTPS e valida o SHA-256 aprovado antes de executar. O APK atual aceita `86d3f3dd20bb6a755b924356ec2495d29454d4985b24d1d1839264cffef98a7b`. Mudanças posteriores no HTML exigem atualizar o hash e recompilar o APK. O app permanece em orientação horizontal.
+
+O APK é debug, apenas para instalação e teste; não foi publicado na Play Store. O jogo ainda depende de bibliotecas externas, como Three.js e PeerJS, que precisam de Internet.
