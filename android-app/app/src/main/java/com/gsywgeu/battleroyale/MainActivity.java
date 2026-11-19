@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 
 public final class MainActivity extends Activity {
     private static final String HTML_URL = "https://raw.githubusercontent.com/lkhtyvug/battle-royale-public/main/index.html";
-    private static final String EXPECTED_SHA256 = "86d3f3dd20bb6a755b924356ec2495d29454d4985b24d1d1839264cffef98a7b";
+    private static final String EXPECTED_SHA256 = "00ef53fba455dcd3088112294b90e2c6db432dc0203ce159a610d006912e24bc";
     private static final long MAX_HTML_BYTES = 25L * 1024L * 1024L;
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
 

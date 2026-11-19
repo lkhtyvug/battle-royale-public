@@ -991,12 +991,12 @@ if(!ACCS()[CUR])CUR=null;
 let SAVE_KEY=CUR?'br_save_'+CUR:'br_save_guest';const COST=20;
 const h53=s=>{let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677)}a=Math.imul(a^a>>>16,2246822507)^Math.imul(b^b>>>13,3266489909);b=Math.imul(b^b>>>16,2246822507)^Math.imul(a^a>>>13,3266489909);return(4294967296*(2097151&b)+(a>>>0)).toString(36)};
 const hashPw=(p,s)=>h53(s+p)+h53(p+s+'x');
-const GAME_VERSION='v17.9',VERSION_KEY='br_game_version';
+const GAME_VERSION='v17.10',VERSION_KEY='br_game_version';
 const versionReady=()=>lsGet(VERSION_KEY)===GAME_VERSION;
 function renderVersionGate(){
  const b=$('verbtn');if(!b)return;
  const ok=versionReady();b.textContent=ok?GAME_VERSION+' ✓':'ATUALIZAR '+GAME_VERSION;b.classList.toggle('ready',ok);
- ['aucreate','aulogin'].forEach(id=>{const el=$(id);if(el)el.disabled=!ok});
+
  const go=$('go');if(go&&!ok)go.disabled=true;
 }
 $('verbtn').onclick=()=>{lsSet(VERSION_KEY,GAME_VERSION);renderVersionGate();toast('Jogo atualizado para '+GAME_VERSION)};
@@ -1044,15 +1044,15 @@ async function verifyPasswordRecord(account,password){
 }
 function clearAuthFields(){['aun1','aup1i','aun2','aup2i'].forEach(id=>{const el=$(id);if(el)el.value=''})}
 async function createLocalAccount(){
- if(!versionReady()){toast('Toque em ATUALIZAR '+GAME_VERSION+' antes de entrar');return}
+
  const name=normalizeAccountName($('aun1').value),password=$('aup1i').value;
  if(!name){toast('Digite um nome para criar a conta');$('aun1').focus();return}
  if(!password){toast('Digite uma senha para criar a conta');$('aup1i').focus();return}
  if(password.length<6){toast('A senha precisa ter pelo menos 6 caracteres');$('aup1i').focus();return}
  if(!cryptoAvailable()){toast('Este aparelho não oferece armazenamento seguro para a senha');return}
- const button=$('aucreate');button.disabled=true;
+ const button=$('aucreate'),originalLabel=$('aucreate').textContent;button.disabled=true;button.textContent='CRIANDO...';
  try{
-  const accounts=ACCS(),existing=Object.values(accounts).find(x=>accountKey(x.name)===accountKey(name));
+  const accounts=ACCS(),existing=Object.values(accounts).find(x=>x&&accountKey(x.name)===accountKey(name));
   const credentials=await createPasswordRecord(password);
   if(existing){
    if(existing.ph||existing.h){toast('Esse nome já existe neste aparelho. Entre pela aba ENTRAR.');auShow(2);$('aun2').value=existing.name;return}
@@ -1067,23 +1067,23 @@ async function createLocalAccount(){
   if(Object.keys(accounts).length===1){const old=lsGet('br_save_v1');if(old&&!lsGet('br_save_'+id))lsSet('br_save_'+id,old)}
   clearAuthFields();startSession(id);toast('Conta criada neste aparelho.');
  }catch(e){toast('Não consegui criar a conta. Tente novamente.')}
- finally{button.disabled=!versionReady()}
+ finally{button.disabled=false;button.textContent=originalLabel}
 }
 async function loginLocalAccount(){
- if(!versionReady()){toast('Toque em ATUALIZAR '+GAME_VERSION+' antes de entrar');return}
+
  const entered=String($('aun2').value||'').trim(),password=$('aup2i').value;
  if(!entered){toast('Digite o nome da conta');$('aun2').focus();return}
  if(!password){toast('Digite sua senha');$('aup2i').focus();return}
  if(!cryptoAvailable()){toast('Este aparelho não oferece suporte a este login');return}
- const account=Object.values(ACCS()).find(x=>String(x.id)===entered||accountKey(x.name)===accountKey(entered));
+ const account=Object.values(ACCS()).find(x=>x&&(String(x.id)===entered||accountKey(x.name)===accountKey(entered)));
  if(!account){toast('Nome ou senha incorretos neste aparelho');return}
- const button=$('aulogin');button.disabled=true;
+ const button=$('aulogin'),originalLabel=$('aulogin').textContent;button.disabled=true;button.textContent='VERIFICANDO...';
  try{
   if(!await verifyPasswordRecord(account,password)){toast('Nome ou senha incorretos neste aparelho');return}
   if(account.h&&!account.ph){Object.assign(account,await createPasswordRecord(password));delete account.h;delete account.s;const accounts=ACCS();accounts[account.id]=account;lsSet('br_acc_v1',JSON.stringify(accounts))}
   clearAuthFields();startSession(account.id);
  }catch(e){toast('Não consegui validar a senha. Tente novamente.')}
- finally{button.disabled=!versionReady()}
+ finally{button.disabled=false;button.textContent=originalLabel}
 }
 $('aucreate').onclick=createLocalAccount;
 $('aulogin').onclick=loginLocalAccount;
